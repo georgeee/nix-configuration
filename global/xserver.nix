@@ -6,6 +6,7 @@
 
 let
    sysPkgs = with pkgs; [
+     # haskellPackages.ghcWithPackages (pkgs: with pkgs; [ taffybar ] )
    ];
    hsPkgs  = with pkgs.haskellPackages; [
      xmonad xmonad-contrib taffybar

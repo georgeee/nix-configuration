@@ -11,14 +11,16 @@ let
      tmux htop mosh acpi curl
      unrar unzip nettools gnupg tcpdump strace traceroute openssl
      gcc chromium
+     # telegram-desktop
      
      vlc ffmpeg konsole xclip pulseaudioFull
 
      corefonts freefont_ttf terminus_font ubuntu_font_family
      
    ];
-   hsPkgs  = with pkgs.haskellPackages; [
-     stylish-haskell     
+   hsPkgs = with pkgs.haskellPackages; [
+     stylish-haskell
+     stack
    ];
 in
 {

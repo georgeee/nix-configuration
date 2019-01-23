@@ -3,12 +3,19 @@ import           XMonad.Prompt.Shell
 import qualified Data.Map        as M
 import qualified XMonad.StackSet as W
 import           XMonad.Prompt
+import XMonad.Hooks.DynamicLog
+import XMonad.Actions.CycleWS
 import System.Exit
 
-main = xmonad $
-  defaultConfig { keys = myKeys
-                , modMask = mod4Mask
-                }
+main = xmonad =<< statusBar "taffybar" def toggleStatusBarVisibilityKey conf
+  where
+    toggleStatusBarVisibilityKey xc = (modMask xc, xK_b)
+
+    conf =
+      def
+        { keys = myKeys
+        , modMask = mod4Mask
+        }
 
 myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     [ ((modm .|. shiftMask, xK_Return), spawn $ XMonad.terminal conf)
@@ -21,6 +28,11 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
 
     --  Reset the layouts on the current workspace to default
     , ((modm .|. shiftMask, xK_space ), setLayout $ XMonad.layoutHook conf)
+
+    -- floating layer stuff
+    , ((modm .|. shiftMask                                    , xK_f     ), withFocused $ windows . W.sink)
+    , ((modm                                                  , xK_f     ), withFocused $ windows . (flip W.float) (W.RationalRect (0) (1/50) (1/1) (1/1)))
+    , ((modm                                                  , xK_z     ), toggleWS)
 
     -- Resize viewed windows to the correct size
     , ((modm,               xK_n     ), refresh)
@@ -61,19 +73,13 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     -- Deincrement the number of windows in the master area
     , ((modm              , xK_period), sendMessage (IncMasterN (-1)))
 
-    -- Toggle the status bar gap
-    -- Use this binding with avoidStruts from Hooks.ManageDocks.
-    -- See also the statusBar function from Hooks.DynamicLog.
-    --
-    -- , ((modm              , xK_b     ), sendMessage ToggleStruts)
-
     -- Quit xmonad
     , ((modm .|. shiftMask, xK_q     ), io (exitWith ExitSuccess))
 
     -- Restart xmonad
     , ((modm              , xK_q     ), spawn "xmonad --recompile; xmonad --restart")
 
-    , ((modm              , xK_r     ), shellPrompt defaultXPConfig)
+    , ((modm              , xK_r     ), shellPrompt def)
     ]
     ++
 
