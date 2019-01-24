@@ -12,6 +12,7 @@ import System.Taffybar.Widget.Generic.PollingGraph
 import System.Taffybar.Widget.Generic.PollingLabel
 import System.Taffybar.Widget.Util
 import System.Taffybar.Widget.Workspaces
+import System.Taffybar.Widget.FreedesktopNotifications
 
 transparent = (0.0, 0.0, 0.0, 0.0)
 yellow1 = (0.9453125, 0.63671875, 0.2109375, 1.0)
@@ -69,6 +70,7 @@ main = do
           -- See https://github.com/taffybar/gtk-sni-tray#statusnotifierwatcher
           -- for a better way to set up the sni tray
       tray = sniTrayNew
+      notify = notifyAreaNew defaultNotificationConfig
       myConfig = defaultSimpleTaffyConfig
         { startWidgets =
             workspaces : map (>>= buildContentsBox)
@@ -81,9 +83,10 @@ main = do
           , tray
           , cpu
           , mem
-          , textBatteryNew " bat $percentage$% ($time$) "
+          , textBatteryNew " bat $percentage$% $time$ "
           , net
-          , mpris2New
+          --, mpris2New
+          , notify
           ]
         , barPosition = Top
         , barPadding = 10

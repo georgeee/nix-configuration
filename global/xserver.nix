@@ -39,6 +39,7 @@ let
     iconTheme
     hicolor_icon_theme
 
+    libnotify
     dropbox feh
     trayer
     chromium konsole xclip 
@@ -54,7 +55,13 @@ let
   ];
 in
 {
+   imports = [ ./suspend.nix  ];
    services.upower.enable = true;
+   services.gnome3.gnome-keyring.enable = true;
+   services.batteryNotifier = {
+      enable = true;
+      notifyCapacity = 15;
+   };
    services.xserver = {
       enable = true;
       layout = "us,ru";

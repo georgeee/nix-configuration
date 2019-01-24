@@ -58,6 +58,10 @@ in
       # enablePepperPDF = true;
      };
   };
+  services.logind.extraConfig = ''
+      HandleLidSwitch=hybrid-sleep
+      HandlePowerKey=hibernate
+    '';
 
   environment.systemPackages = builtins.concatLists [ sysPkgs hsPkgs ];
 

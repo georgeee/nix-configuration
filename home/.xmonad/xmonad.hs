@@ -26,7 +26,9 @@ main = xmonad . modConf =<< statusBar "taffybar" def toggleStatusBarVisibilityKe
         , manageHook = mconcat
             [ isFullscreen                   --> doFullFloat
             , className =? "Gimp"            --> doFloat
+            , className =? "telegram"        --> doShift "IM"
             , className =? "Telegram"        --> doShift "IM"
+            , className =? "telegram-desktop"        --> doShift "IM"
             , className =? "vlc"             --> doCenterFloat
             , transience'
             , isDialog                       --> doCenterFloat
