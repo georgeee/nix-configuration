@@ -57,7 +57,7 @@ main = do
         defaultWorkspacesConfig
         { minIcons = 1
         , widgetGap = 0
-        , showWorkspaceFn = hideEmpty
+        , showWorkspaceFn = const True
         }
       workspaces = workspacesNew myWorkspacesConfig
       cpu = pollingGraphNew cpuCfg 0.5 cpuCallback
@@ -74,16 +74,16 @@ main = do
             workspaces : map (>>= buildContentsBox)
               [
                 layout
-                --, windows
+                , windows
                 ]
         , endWidgets = map (>>= buildContentsBox)
-          [-- batteryIconNew
-           clock
-          --, tray
+          [ clock
+          , tray
           , cpu
           , mem
-          --, net
-          --, mpris2New
+          , textBatteryNew " bat $percentage$% ($time$) "
+          , net
+          , mpris2New
           ]
         , barPosition = Top
         , barPadding = 10

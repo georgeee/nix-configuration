@@ -1,10 +1,12 @@
 import XMonad
+import           Graphics.X11.ExtraTypes
 import           XMonad.Prompt.Shell
 import qualified Data.Map        as M
 import qualified XMonad.StackSet as W
 import           XMonad.Prompt
 import XMonad.Hooks.DynamicLog
 import XMonad.Actions.CycleWS
+import XMonad.Hooks.SetWMName (setWMName)
 import System.Exit
 
 main = xmonad =<< statusBar "taffybar" def toggleStatusBarVisibilityKey conf
@@ -15,13 +17,21 @@ main = xmonad =<< statusBar "taffybar" def toggleStatusBarVisibilityKey conf
       def
         { keys = myKeys
         , modMask = mod4Mask
+        , startupHook = myStartupHook
         }
+
+myStartupHook =
+  spawn
+        "compton --backend glx --xrender-sync --xrender-sync-fence -fcCz -l -17 -t -17"
+  <+> spawn "hsetroot -solid '#ab45cf'"
+  <+> setWMName "LG3D"
+  <+> spawn "konsole -e tmux"
 
 myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     [ ((modm .|. shiftMask, xK_Return), spawn $ XMonad.terminal conf)
 
     -- close focused window
-    , ((modm .|. shiftMask, xK_c     ), kill)
+    , ((modm , xK_c     ), kill)
 
      -- Rotate through the available layout algorithms
     , ((modm,               xK_space ), sendMessage NextLayout)
@@ -80,6 +90,17 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm              , xK_q     ), spawn "xmonad --recompile; xmonad --restart")
 
     , ((modm              , xK_r     ), shellPrompt def)
+
+    -- Mute volume
+    , ( (0, xF86XK_AudioMute), spawn $ ".xmonad/volume.sh mute" )
+    -- Decrease volume
+    , ( (0, xF86XK_AudioLowerVolume), spawn $ ".xmonad/volume.sh dec" )
+    -- Increase volume
+    , ( (0, xF86XK_AudioRaiseVolume), spawn $ ".xmonad/volume.sh inc" )
+    -- Decrease brightness
+    , ( (0, xF86XK_MonBrightnessDown), spawn "xbacklight -dec 10")
+    -- Increase brightness
+    , ((0, xF86XK_MonBrightnessUp), spawn "xbacklight -inc 10")
     ]
     ++
 

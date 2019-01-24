@@ -6,16 +6,14 @@
 
 let
    sysPkgs = with pkgs; [
-     wget git julia ghc
+     wget git julia ghc killall
 
-     tmux htop mosh acpi curl
+     tmux htop mosh acpi curl moc
      unrar unzip nettools gnupg tcpdump strace traceroute openssl
-     gcc chromium
+     gcc
      # telegram-desktop
-     
-     vlc ffmpeg konsole xclip pulseaudioFull
+     ffmpeg pulseaudioFull
 
-     corefonts freefont_ttf terminus_font ubuntu_font_family
      
    ];
    hsPkgs = with pkgs.haskellPackages; [
