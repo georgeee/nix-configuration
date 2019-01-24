@@ -5,27 +5,42 @@ import qualified Data.Map        as M
 import qualified XMonad.StackSet as W
 import           XMonad.Prompt
 import XMonad.Hooks.DynamicLog
+import XMonad.Hooks.ManageHelpers
 import XMonad.Actions.CycleWS
 import XMonad.Hooks.SetWMName (setWMName)
+import           XMonad.Actions.SpawnOn
 import System.Exit
 
-main = xmonad =<< statusBar "taffybar" def toggleStatusBarVisibilityKey conf
+main = xmonad . modConf =<< statusBar "taffybar" def toggleStatusBarVisibilityKey conf
   where
     toggleStatusBarVisibilityKey xc = (modMask xc, xK_b)
+
+    modConf cnf = cnf { manageHook = manageSpawn <+> manageHook cnf }
 
     conf =
       def
         { keys = myKeys
         , modMask = mod4Mask
         , startupHook = myStartupHook
+        , workspaces = map show [1..9]
+        , manageHook = mconcat
+            [ isFullscreen                   --> doFullFloat
+            , className =? "Gimp"            --> doFloat
+            , className =? "Telegram"        --> doShift "IM"
+            , className =? "vlc"             --> doCenterFloat
+            , transience'
+            , isDialog                       --> doCenterFloat
+            , role      =? "pop-up"          --> doCenterFloat
+            ]
         }
+    role = stringProperty "WM_WINDOW_ROLE"
 
 myStartupHook =
-  spawn
-        "compton --backend glx --xrender-sync --xrender-sync-fence -fcCz -l -17 -t -17"
-  <+> spawn "hsetroot -solid '#ab45cf'"
+  spawn "compton --backend glx --xrender-sync --xrender-sync-fence -fcCz -l -17 -t -17"
+  <+> spawn "trayer --edge top --height 48 --width 5 --align left --margin 30 --transparent true --alpha 157 --tint 0x000000"
   <+> setWMName "LG3D"
   <+> spawn "konsole -e tmux"
+  <+> spawn "telegram-desktop"
 
 myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     [ ((modm .|. shiftMask, xK_Return), spawn $ XMonad.terminal conf)

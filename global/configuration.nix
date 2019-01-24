@@ -68,7 +68,11 @@ in
   sound.enable = true;
   hardware.pulseaudio.enable = true;
 
-
+  services.openvpn.servers.serokell = {
+    config = builtins.readFile "/keys/serokell-net.ovpn";
+    updateResolvConf = true;
+    #autoStart = false;
+  };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.georgeee = {

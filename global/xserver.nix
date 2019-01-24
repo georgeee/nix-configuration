@@ -40,15 +40,17 @@ let
     hicolor_icon_theme
 
     dropbox feh
+    trayer
     chromium konsole xclip 
-    # xbacklight (why fails to install?)
+    xorg.xbacklight
     vlc networkmanagerapplet
     deadbeef deadbeef-mpris2-plugin deadbeef-with-plugins
     corefonts freefont_ttf terminus_font ubuntu_font_family
-
+    tdesktop
   ];
   hsPkgs  = with pkgs.haskellPackages; [
     xmonad xmonad-contrib taffybar
+    status-notifier-item
   ];
 in
 {
@@ -92,8 +94,9 @@ in
       };
       displayManager.sessionCommands = with pkgs; lib.mkAfter ''
         ${xlibs.xsetroot}/bin/xsetroot -cursor_name left_ptr;
-        ${coreutils}/bin/sleep 30 && ${dropbox}/bin/dropbox &
-        ${networkmanagerapplet}/bin/nm-applet &
+        ${haskellPackages.status-notifier-item}/bin/status-notifier-watcher &
+        ${coreutils}/bin/sleep 10 && ${dropbox}/bin/dropbox &
+        ${coreutils}/bin/sleep 10 && ${networkmanagerapplet}/bin/nm-applet &
         ${feh}/bin/feh --bg-scale ~/.bg.jpg;
         exec ${haskellPackages.xmonad}/bin/xmonad
                                                                       '';
