@@ -1,11 +1,17 @@
 { config, lib, pkgs, ... }:
 
 let
+  # Vim keybindings:
+  # <leader>: ,
+  # ,f or ,F : open nerd tree
+  # Ctrl+c : ghcmod completion
+  # Shift-TAB: simple dictionary completion
   my_vim = pkgs.vim_configurable.customize {
     name = "vim";
     vimrcConfig.vam.knownPlugins = pkgs.vimPlugins;
     vimrcConfig.vam.pluginDictionaries = [
-            { names = [ "vim-tmux-navigator" "vim-orgmode" "nerdtree" "julia-vim"
+      { names = [ "vim-tmux-navigator" "nerdtree" "julia-vim"
+                  "neco-ghc" "ghcmod" "vimproc"
                       ];} ];
     vimrcConfig.customRC = ''
         set history=700
@@ -144,6 +150,12 @@ let
         " If nerd tree is closed, find current file, if open, close it
         nmap <silent> <leader>f <ESC>:call ToggleFindNerd()<CR>
         nmap <silent> <leader>F <ESC>:NERDTreeToggle<CR>
+
+        inoremap <S-TAB> <C-x><C-i>
+        inoremap <C-c> <C-x><C-o>
+        let g:necoghc_enable_detailed_browse = 1
+        let g:haskellmode_completion_ghc = 0
+        autocmd FileType haskell setlocal omnifunc=necoghc#omnifunc
 
     '';
   };

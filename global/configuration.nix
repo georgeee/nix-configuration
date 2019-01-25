@@ -5,21 +5,28 @@
 { config, pkgs, ... }:
 
 let
-   sysPkgs = with pkgs; [
-     wget git julia ghc killall
+  hie-nix = pkgs.fetchFromGitHub {
+    owner = "wizzup";
+    repo = "hie-nix";
+    rev = "279a9bb8baad82ea20f18056420b58ce763ee4ad";
+    sha256 = "1j6763lzgif3wrz28gjsqp201r75rlf7gc3sjhcfa1ix74z0a6ds";
+  };
+  sysPkgs = with pkgs; [
+    wget git julia ghc killall
 
-     tmux htop mosh acpi curl moc
-     unrar unzip nettools gnupg tcpdump strace traceroute openssl
-     gcc
-     # telegram-desktop
-     ffmpeg pulseaudioFull
+    tmux htop mosh acpi curl moc
+    unrar unzip nettools gnupg tcpdump strace traceroute openssl
+    ntfs3g
+    gcc
+    # telegram-desktop
+    ffmpeg pulseaudioFull
 
-     
-   ];
-   hsPkgs = with pkgs.haskellPackages; [
-     stylish-haskell
-     stack
-   ];
+    (import hie-nix { }).ghc-mod84
+  ];
+  hsPkgs = with pkgs.haskellPackages; [
+    stylish-haskell
+    stack
+  ];
 in
 {
   imports =
@@ -83,11 +90,22 @@ in
     isNormalUser = true;
     uid = 1000;
   };
+  
+  #nixpkgs.config.packageOverrides = pkgs: {
+  #  haskell = pkgs.haskell // {
+  #    packages = pkgs.haskell.packages // {
+  #      ghc802 = pkgs.haskell.packages.ghc802.override {
+  #        overrides = self: super: {
+  #          cabal-helper = pkgs.haskell.lib.doJailbreak (super.cabal-helper);
+  #        };
+  #      };
+  #    };
+  #  };
+  #};
 
   # This value determines the NixOS release with which your system is to be
   # compatible, in order to avoid breaking some software such as database
   # servers. You should change this only after NixOS release notes say you
   # should.
   system.stateVersion = "18.09"; # Did you read the comment?
-
 }

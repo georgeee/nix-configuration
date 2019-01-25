@@ -72,12 +72,12 @@ main = do
       tray = sniTrayNew
       notify = notifyAreaNew defaultNotificationConfig
       myConfig = defaultSimpleTaffyConfig
-        { startWidgets =
-            workspaces : map (>>= buildContentsBox)
-              [
-                layout
-                , windows
-                ]
+        { startWidgets = []
+            --workspaces : map (>>= buildContentsBox)
+            --  [
+            --    layout
+            --    , windows
+            --    ]
         , endWidgets = map (>>= buildContentsBox)
           [ clock
           , tray
@@ -87,6 +87,7 @@ main = do
           , net
           --, mpris2New
           , notify
+          --, windows
           ]
         , barPosition = Top
         , barPadding = 10
