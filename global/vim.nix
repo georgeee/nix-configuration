@@ -147,8 +147,14 @@ let
 
     '';
   };
+  my_emacs = (pkgs.emacsPackagesNgGen pkgs.emacs25-nox).emacsWithPackages
+    (epkgs: with epkgs.elpaPackages; with epkgs.melpaStablePackages; [
+      evil
+      evil-org
+      org
+    ]);
 
 in
 {
-   environment.systemPackages = [ my_vim ];
+   environment.systemPackages = [ my_vim my_emacs ];
 }
