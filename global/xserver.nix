@@ -48,7 +48,7 @@ let
     deadbeef deadbeef-mpris2-plugin deadbeef-with-plugins
     corefonts freefont_ttf terminus_font ubuntu_font_family
     tdesktop
-    pcmanfm
+    pcmanfm transmission-gtk
   ];
   hsPkgs  = with pkgs.haskellPackages; [
     xmonad xmonad-contrib taffybar

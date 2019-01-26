@@ -8,34 +8,43 @@ import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.ManageHelpers
 import XMonad.Actions.CycleWS
 import XMonad.Hooks.SetWMName (setWMName)
-import           XMonad.Actions.SpawnOn
+import XMonad.Layout.NoBorders
 import System.Exit
 
-main = xmonad . modConf =<< statusBar "taffybar" def toggleStatusBarVisibilityKey conf
+main = xmonad =<< statusBar "taffybar" def toggleStatusBarVisibilityKey conf
   where
     toggleStatusBarVisibilityKey xc = (modMask xc, xK_b)
-
-    modConf cnf = cnf { manageHook = manageSpawn <+> manageHook cnf }
 
     conf =
       def
         { keys = myKeys
+        , terminal = "konsole"
         , modMask = mod4Mask
         , startupHook = myStartupHook
         , workspaces = map show [1..9]
+        , layoutHook = tiled ||| {-- Mirror tiled ||| --} noBorders Full
         , manageHook = mconcat
-            [ isFullscreen                   --> doFullFloat
-            , className =? "Gimp"            --> doFloat
-            , className =? "telegram"        --> doShift "IM"
-            , className =? "Telegram"        --> doShift "IM"
-            , className =? "telegram-desktop"        --> doShift "IM"
-            , className =? "vlc"             --> doCenterFloat
+            [ isFullscreen                     --> doFullFloat
+            , className =? "Gimp"              --> doFloat
+            , className =? "Telegram-desktop"  --> doShift "4"
+            , className =? "telegram-desktop"  --> doShift "4"
+            , className =? "telegram"          --> doShift "4"
+            , className =? "Telegram"          --> doShift "4"
+            , className =? "vlc"               --> doCenterFloat
             , transience'
-            , isDialog                       --> doCenterFloat
-            , role      =? "pop-up"          --> doCenterFloat
+            , isDialog                         --> doCenterFloat
+            , role      =? "pop-up"            --> doCenterFloat
             ]
         }
     role = stringProperty "WM_WINDOW_ROLE"
+    -- default tiling algorithm partitions the screen into two panes
+    tiled   = Tall nmaster delta ratio
+    -- The default number of windows in the master pane
+    nmaster = 1
+    -- Default proportion of screen occupied by master pane
+    ratio   = 1/2
+    -- Percent of screen to increment by when resizing panes
+    delta   = 3/100
 
 myStartupHook =
   spawn "compton --backend glx --xrender-sync --xrender-sync-fence -fcCz -l -17 -t -17"
@@ -92,7 +101,10 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm,               xK_l     ), sendMessage Expand)
 
     -- Push window back into tiling
-    , ((modm,               xK_t     ), withFocused $ windows . W.sink)
+    , ((modm .|. shiftMask, xK_t     ), withFocused $ windows . W.sink)
+
+    -- Toggle taffybar
+    , ((modm              , xK_t     ), spawn ".xmonad/scripts/toggle-taffybar.sh")
 
     -- Increment the number of windows in the master area
     , ((modm              , xK_comma ), sendMessage (IncMasterN 1))
@@ -104,16 +116,16 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm .|. shiftMask, xK_q     ), io (exitWith ExitSuccess))
 
     -- Restart xmonad
-    , ((modm              , xK_q     ), spawn "xmonad --recompile; xmonad --restart")
+    , ((modm              , xK_q     ), spawn "xmonad --recompile && xmonad --restart")
 
     , ((modm              , xK_r     ), shellPrompt def)
 
     -- Mute volume
-    , ( (0, xF86XK_AudioMute), spawn $ ".xmonad/volume.sh mute" )
+    , ( (0, xF86XK_AudioMute), spawn $ ".xmonad/scripts/volume.sh mute" )
     -- Decrease volume
-    , ( (0, xF86XK_AudioLowerVolume), spawn $ ".xmonad/volume.sh dec" )
+    , ( (0, xF86XK_AudioLowerVolume), spawn $ ".xmonad/scripts/volume.sh dec" )
     -- Increase volume
-    , ( (0, xF86XK_AudioRaiseVolume), spawn $ ".xmonad/volume.sh inc" )
+    , ( (0, xF86XK_AudioRaiseVolume), spawn $ ".xmonad/scripts/volume.sh inc" )
     -- Decrease brightness
     , ( (0, xF86XK_MonBrightnessDown), spawn "xbacklight -dec 10")
     -- Increase brightness
