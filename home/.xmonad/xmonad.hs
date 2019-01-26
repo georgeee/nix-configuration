@@ -13,7 +13,7 @@ import System.Exit
 
 main = xmonad =<< statusBar "taffybar" def toggleStatusBarVisibilityKey conf
   where
-    toggleStatusBarVisibilityKey xc = (modMask xc, xK_b)
+    toggleStatusBarVisibilityKey xc = (modMask xc, xK_t)
 
     conf =
       def
@@ -102,9 +102,6 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
 
     -- Push window back into tiling
     , ((modm .|. shiftMask, xK_t     ), withFocused $ windows . W.sink)
-
-    -- Toggle taffybar
-    , ((modm              , xK_t     ), spawn ".xmonad/scripts/toggle-taffybar.sh")
 
     -- Increment the number of windows in the master area
     , ((modm              , xK_comma ), sendMessage (IncMasterN 1))
