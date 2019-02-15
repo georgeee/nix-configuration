@@ -17,6 +17,7 @@ let
     tmux htop mosh acpi curl moc
     unrar unzip nettools gnupg tcpdump strace traceroute openssl
     ntfs3g
+    asciinema
     gcc
     # telegram-desktop
     ffmpeg pulseaudioFull
@@ -26,16 +27,20 @@ let
   hsPkgs = with pkgs.haskellPackages; [
     stylish-haskell
     stack
+    hlint
   ];
 in
 {
+  virtualisation.docker.enable = true;
+
+  services.physlock.enable = true;
+
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ./vim.nix
       ./xserver.nix
     ];
-
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -84,11 +89,13 @@ in
     updateResolvConf = true;
     #autoStart = false;
   };
+  services.udisks2.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.georgeee = {
     isNormalUser = true;
     uid = 1000;
+    extraGroups = [ "wireshark" "docker" ];
   };
   
   #nixpkgs.config.packageOverrides = pkgs: {

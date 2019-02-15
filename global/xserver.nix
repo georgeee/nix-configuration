@@ -41,7 +41,7 @@ let
 
     libnotify
     dropbox feh
-    trayer
+    trayer firefox
     chromium konsole xclip 
     xorg.xbacklight
     vlc networkmanagerapplet

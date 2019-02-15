@@ -6,6 +6,7 @@ let
   # ,f or ,F : open nerd tree
   # Ctrl+c : ghcmod completion
   # Shift-TAB: simple dictionary completion
+  # , p to start paste mode (no nasty tabs on paste of indented text)
   my_vim = pkgs.vim_configurable.customize {
     name = "vim";
     vimrcConfig.vam.knownPlugins = pkgs.vimPlugins;
@@ -157,12 +158,14 @@ let
         let g:haskellmode_completion_ghc = 0
         autocmd FileType haskell setlocal omnifunc=necoghc#omnifunc
 
+        :set pastetoggle=<leader>p
     '';
   };
   my_emacs = (pkgs.emacsPackagesNgGen pkgs.emacs25-nox).emacsWithPackages
     (epkgs: with epkgs.elpaPackages; with epkgs.melpaStablePackages; [
       evil
       evil-org
+      evil-leader
       org
     ]);
 
