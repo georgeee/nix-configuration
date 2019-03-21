@@ -40,7 +40,7 @@ let
     hicolor_icon_theme
 
     libnotify
-    dropbox feh
+    dropbox feh evince
     trayer firefox
     chromium konsole xclip 
     xorg.xbacklight
