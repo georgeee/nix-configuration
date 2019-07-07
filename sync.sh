@@ -12,5 +12,6 @@ mkdir -p home/.xmonad home/.local/share home/.kde/share/apps home/.config
   rsync -r ~/.local/share/konsole home/.local/share && \
   rsync -r ~/.kde/share/apps/konsole home/.kde/share/apps && \
   rsync -r ~/.config/taffybar home/.config && \
-  git add home global && \
+  rsync -r ~/.pia home/.pia && \
+  git add home global sync.sh && \
   git commit -m "Updated configuration" ; git push

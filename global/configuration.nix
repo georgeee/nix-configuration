@@ -87,7 +87,7 @@ in
   services.openvpn.servers.pia = {
     config = builtins.readFile "/keys/pia/US Silicon Valley.ovpn";
     updateResolvConf = true;
-    #autoStart = false;
+    autoStart = false;
   };
   services.udisks2.enable = true;
 
@@ -95,7 +95,7 @@ in
   users.users.georgeee = {
     isNormalUser = true;
     uid = 1000;
-    extraGroups = [ "wireshark" "docker" ];
+    extraGroups = [ "wireshark" "docker" "networkmanager" ];
   };
   
   #nixpkgs.config.packageOverrides = pkgs: {
