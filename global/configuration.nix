@@ -31,7 +31,7 @@ let
   ];
 in
 {
-  virtualisation.docker.enable = true;
+  virtualisation.docker.enable = false;
 
   services.physlock.enable = true;
 
@@ -84,8 +84,8 @@ in
   sound.enable = true;
   hardware.pulseaudio.enable = true;
 
-  services.openvpn.servers.serokell = {
-    config = builtins.readFile "/keys/serokell-net.ovpn";
+  services.openvpn.servers.pia = {
+    config = builtins.readFile "/keys/pia/US Silicon Valley.ovpn";
     updateResolvConf = true;
     #autoStart = false;
   };

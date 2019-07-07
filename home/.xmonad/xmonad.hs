@@ -48,7 +48,7 @@ main = xmonad =<< statusBar "taffybar" def toggleStatusBarVisibilityKey conf
 
 myStartupHook =
   spawn "compton --backend glx --xrender-sync --xrender-sync-fence -fcCz -l -17 -t -17"
-  <+> spawn "trayer --edge top --height 48 --width 5 --align left --margin 30 --transparent true --alpha 157 --tint 0x000000"
+  <+> spawn "sleep 5s && trayer --edge top --height 48 --width 5 --align left --margin 30 --transparent true --alpha 157 --tint 0x000000"
   <+> setWMName "LG3D"
   <+> spawn "konsole -e tmux"
   <+> spawn "telegram-desktop"
@@ -114,6 +114,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
 
     -- Restart xmonad
     , ((modm              , xK_q     ), spawn "xmonad --recompile && xmonad --restart")
+    , ((noModMask         , xK_F7     ), spawn "xdotool click 3")
 
     , ((modm              , xK_r     ), shellPrompt def)
 
