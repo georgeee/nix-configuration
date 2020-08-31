@@ -12,7 +12,8 @@ let
     vimrcConfig.vam.knownPlugins = pkgs.vimPlugins;
     vimrcConfig.vam.pluginDictionaries = [
       { names = [ "vim-tmux-navigator" "nerdtree" "julia-vim"
-                  "neco-ghc" "ghcmod" "vimproc"
+      # "neco-ghc" 
+      "vimproc" # "ghcmod"
                       ];} ];
     vimrcConfig.customRC = ''
         set history=700
@@ -161,15 +162,15 @@ let
         :set pastetoggle=<leader>p
     '';
   };
-  my_emacs = (pkgs.emacsPackagesNgGen pkgs.emacs25-nox).emacsWithPackages
-    (epkgs: with epkgs.elpaPackages; with epkgs.melpaStablePackages; [
-      evil
-      evil-org
-      evil-leader
-      org
-    ]);
+  # my_emacs = (pkgs.emacsPackagesNgGen pkgs.emacs25-nox).emacsWithPackages
+  #   (epkgs: with epkgs.elpaPackages; with epkgs.melpaStablePackages; [
+  #     evil
+  #     evil-org
+  #     evil-leader
+  #     org
+  #   ]);
 
 in
 {
-   environment.systemPackages = [ my_vim my_emacs ];
+   environment.systemPackages = [ my_vim ];
 }

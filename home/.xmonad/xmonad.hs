@@ -9,6 +9,8 @@ import XMonad.Hooks.ManageHelpers
 import XMonad.Actions.CycleWS
 import XMonad.Hooks.SetWMName (setWMName)
 import XMonad.Layout.NoBorders
+import XMonad.Layout.SimplestFloat
+import XMonad.Layout.PerWorkspace
 import System.Exit
 
 main = xmonad =<< statusBar "taffybar" def toggleStatusBarVisibilityKey conf
@@ -22,7 +24,7 @@ main = xmonad =<< statusBar "taffybar" def toggleStatusBarVisibilityKey conf
         , modMask = mod4Mask
         , startupHook = myStartupHook
         , workspaces = map show [1..9]
-        , layoutHook = tiled ||| {-- Mirror tiled ||| --} noBorders Full
+        , layoutHook = onWorkspace "float" simplestFloat $ tiled ||| Mirror tiled ||| noBorders Full
         , manageHook = mconcat
             [ isFullscreen                     --> doFullFloat
             , className =? "Gimp"              --> doFloat
@@ -32,15 +34,15 @@ main = xmonad =<< statusBar "taffybar" def toggleStatusBarVisibilityKey conf
             , className =? "Telegram"          --> doShift "4"
             , className =? "vlc"               --> doCenterFloat
             , transience'
-            , isDialog                         --> doCenterFloat
-            , role      =? "pop-up"            --> doCenterFloat
+            -- , isDialog                         --> doFloat
+            -- , role      =? "pop-up"            --> doFloat
             ]
         }
     role = stringProperty "WM_WINDOW_ROLE"
     -- default tiling algorithm partitions the screen into two panes
     tiled   = Tall nmaster delta ratio
     -- The default number of windows in the master pane
-    nmaster = 1
+    nmaster = 2
     -- Default proportion of screen occupied by master pane
     ratio   = 1/2
     -- Percent of screen to increment by when resizing panes

@@ -27,6 +27,7 @@ let
         export QT_STYLE_OVERRIDE=breeze
         '';
   sysPkgs = with pkgs; [
+    nvidia-offload
     #themes
     adapta-gtk-theme
     gnome3.adwaita-icon-theme
@@ -49,11 +50,19 @@ let
     corefonts freefont_ttf terminus_font ubuntu_font_family
     tdesktop
     pcmanfm transmission-gtk
+    polybar
   ];
   hsPkgs  = with pkgs.haskellPackages; [
-    xmonad xmonad-contrib taffybar
+    xmonad xmonad-contrib
     status-notifier-item
   ];
+  nvidia-offload = pkgs.writeShellScriptBin "nvidia-offload" ''
+      export __NV_PRIME_RENDER_OFFLOAD=1
+      export __NV_PRIME_RENDER_OFFLOAD_PROVIDER=NVIDIA-G0
+      export __GLX_VENDOR_LIBRARY_NAME=nvidia
+      export __VK_LAYER_NV_optimus=NVIDIA_only
+      exec -a "$0" "$@"
+      '';
 in
 {
    imports = [ ./suspend.nix  ];
@@ -67,15 +76,8 @@ in
       enable = true;
       layout = "us,ru";
       xkbOptions = "grp:caps_toggle";
-      displayManager.slim = {
-        enable = true;
-        autoLogin = false;
-        defaultUser = "georgeee";
-        theme = pkgs.fetchurl {
-          url    = "https://github.com/jagajaga/nixos-slim-theme/archive/Final.tar.gz";
-          sha256 = "4cab5987a7f1ad3cc463780d9f1ee3fbf43603105e6a6e538e4c2147bde3ee6b";
-        };
-      };
+      displayManager.sddm.enable = true;
+      videoDrivers = [ "nvidia" ];
       wacom.enable = true;
       synaptics = {
         enable = true;
@@ -88,19 +90,18 @@ in
         palmDetect = true;
       };
       desktopManager = {
-        default = "none";
         xterm.enable = false;
       };
       monitorSection = ''
           DisplaySize 487.2 273.6
         '';
       windowManager = {
-        default = "xmonad";
         xmonad = {
           enable                 = true;
           enableContribAndExtras = true;
         };
       };
+      displayManager.defaultSession = "none+xmonad";
       displayManager.sessionCommands = with pkgs; lib.mkAfter ''
         ${xlibs.xsetroot}/bin/xsetroot -cursor_name left_ptr;
         ${haskellPackages.status-notifier-item}/bin/status-notifier-watcher &

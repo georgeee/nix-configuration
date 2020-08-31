@@ -12,7 +12,9 @@ let
     sha256 = "1j6763lzgif3wrz28gjsqp201r75rlf7gc3sjhcfa1ix74z0a6ds";
   };
   sysPkgs = with pkgs; [
-    wget git julia ghc killall
+    wget git 
+    # julia
+    ghc killall
 
     tmux htop mosh acpi curl moc
     unrar unzip nettools gnupg tcpdump strace traceroute openssl
@@ -48,6 +50,7 @@ in
   networking.hostName = "georgeee-laptop-1"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
   networking.networkmanager.enable = true;
+  networking.firewall.allowedTCPPorts = [ 8080 5560 5561 ];
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
@@ -55,13 +58,14 @@ in
 
   # Select internationalisation properties.
   i18n = {
-    consoleFont = "Lat2-Terminus16";
-    consoleKeyMap = "us";
     defaultLocale = "en_US.UTF-8";
   };
+  console.keyMap = "us";
+  console.font = "Lat2-Terminus16";
 
   # Set your time zone.
   time.timeZone = "Europe/Moscow";
+  # services.timesyncd.enable = false;
 
   nixpkgs.config = {
     allowUnfree = true;
@@ -114,5 +118,5 @@ in
   # compatible, in order to avoid breaking some software such as database
   # servers. You should change this only after NixOS release notes say you
   # should.
-  system.stateVersion = "19.03"; # Did you read the comment?
+  system.stateVersion = "18.07"; # Did you read the comment?
 }
