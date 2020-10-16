@@ -3,3 +3,5 @@
 	name = georgeee
 [core]
 	editor = vim
+[http]
+	sslVerify = false
