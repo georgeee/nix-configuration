@@ -24,7 +24,7 @@ let
     # telegram-desktop
     ffmpeg pulseaudioFull
 
-    (import hie-nix { }).ghc-mod84
+    # (import hie-nix { }).ghc-mod84
   ];
   hsPkgs = with pkgs.haskellPackages; [
     stylish-haskell
