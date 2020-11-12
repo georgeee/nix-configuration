@@ -46,6 +46,14 @@ in
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  systemd.services.createDirs = {
+    description = "Create directories";
+    path = [ pkgs.bash ];
+    wantedBy = [ "default.target" ];
+    script = ''
+      /usr/bin/env bash -c 'mkdir -p /run/{postgresql,mount/passport,mount/usb} && chmod 777 /run/{postgresql,mount/passport,mount/usb} && chmod 777 /sys/class/backlight/intel_backlight/brightness'
+      '';
+  };
 
   networking.hostName = "georgeee-laptop-1"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -99,7 +107,7 @@ in
   users.users.georgeee = {
     isNormalUser = true;
     uid = 1000;
-    extraGroups = [ "wireshark" "docker" "networkmanager" ];
+    extraGroups = [ "wireshark" "docker" "networkmanager" "wheel" "adm" ];
   };
   
   #nixpkgs.config.packageOverrides = pkgs: {

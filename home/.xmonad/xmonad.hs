@@ -127,9 +127,9 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     -- Increase volume
     , ( (0, xF86XK_AudioRaiseVolume), spawn $ ".xmonad/scripts/volume.sh inc" )
     -- Decrease brightness
-    , ( (0, xF86XK_MonBrightnessDown), spawn "xbacklight -dec 10")
+    , ( (0, xF86XK_MonBrightnessDown), spawn ".xmonad/scripts/brightness.sh dec")
     -- Increase brightness
-    , ((0, xF86XK_MonBrightnessUp), spawn "xbacklight -inc 10")
+    , ((0, xF86XK_MonBrightnessUp), spawn ".xmonad/scripts/brightness.sh inc")
     ]
     ++
 

@@ -31,13 +31,14 @@ let
     #themes
     adapta-gtk-theme
     gnome3.adwaita-icon-theme
-    # xorg.xcursorthemes
+    xorg.xcursorthemes
+    # gnome-shell-extension-appindicator-32
     # Qt theme
     # breeze-qt5
     # breeze-qt4
 
     # Icons (Main)
-    iconTheme
+    # iconTheme
     hicolor_icon_theme
 
     libnotify
@@ -50,7 +51,8 @@ let
     corefonts freefont_ttf terminus_font ubuntu_font_family
     tdesktop
     pcmanfm transmission-gtk
-    polybar
+    udiskie
+    # polybar
   ];
   hsPkgs  = with pkgs.haskellPackages; [
     xmonad xmonad-contrib
@@ -65,6 +67,7 @@ let
       '';
 in
 {
+   # services.udev.packages = with pkgs; [ gnome3.gnome-settings-daemon ];
    imports = [ ./suspend.nix  ];
    services.upower.enable = true;
    services.gnome3.gnome-keyring.enable = true;
@@ -72,13 +75,33 @@ in
       enable = true;
       notifyCapacity = 15;
    };
+   # hardware.nvidia.optimus_prime = {
+   #  enable = true;
+   #  # Bus ID of the Intel GPU. You can find it using lspci, either under 3D or VGA
+   #  intelBusId = "PCI:0:2:0";
+
+   #  # Bus ID of the NVIDIA GPU. You can find it using lspci, either under 3D or VGA
+   #  nvidiaBusId = "PCI:1:0:0";
+   # };
    services.xserver = {
+      # serverLayoutSection = ''
+      #       Option "AllowNVIDIAGPUScreens"
+      #           '';
+      # displayManager.startx.enable = true;
       enable = true;
       layout = "us,ru";
       xkbOptions = "grp:caps_toggle";
       displayManager.sddm.enable = true;
+
+      # Uncomment to enable nvidia
       videoDrivers = [ "nvidia" ];
-      wacom.enable = true;
+      dpi = 192;
+      
+      # wacom.enable = true;
+      monitorSection = ''
+          DisplaySize 487.2 273.6
+        '';
+      # desktopManager.gnome3.enable = true;
       synaptics = {
         enable = true;
         minSpeed = "1.0"; 
@@ -92,9 +115,6 @@ in
       desktopManager = {
         xterm.enable = false;
       };
-      monitorSection = ''
-          DisplaySize 487.2 273.6
-        '';
       windowManager = {
         xmonad = {
           enable                 = true;
@@ -107,9 +127,10 @@ in
         ${haskellPackages.status-notifier-item}/bin/status-notifier-watcher &
         ${coreutils}/bin/sleep 10 && ${dropbox}/bin/dropbox &
         ${coreutils}/bin/sleep 10 && ${networkmanagerapplet}/bin/nm-applet &
-        ${feh}/bin/feh --bg-scale ~/.bg.jpg;
+        ${feh}/bin/feh --bg-scale ~/.bg.jpg ;
+        ${udiskie}/bin/udiskie -t ;
         exec ${haskellPackages.xmonad}/bin/xmonad
-                                                                      '';
+                                                               '';
    };
    environment.extraInit = ''
      ${themeEnv}
