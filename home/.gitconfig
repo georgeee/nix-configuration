@@ -1,7 +1,14 @@
 [user]
-	email = george.agapov@gmail.com
-	name = georgeee
+  email = george.agapov@gmail.com
+  name = georgeee
+  signingkey = 0xA7A3D83992E6D1AF
 [core]
-	editor = vim
+  editor = vim
 [http]
-	sslVerify = false
+  sslVerify = false
+[commit]
+  gpgsign = true
+# [url "ssh://git@github.com/"]
+#   insteadOf = https://github.com/
+[gpg]
+	program = gpg2

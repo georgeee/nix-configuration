@@ -7,11 +7,22 @@ let
   # Ctrl+c : ghcmod completion
   # Shift-TAB: simple dictionary completion
   # , p to start paste mode (no nasty tabs on paste of indented text)
+  vim-minizinc = pkgs.vimUtils.buildVimPlugin {
+    name = "vim-minizinc";
+    src = pkgs.fetchFromGitHub {
+      owner = "vale1410";
+      repo = "vim-minizinc";
+      rev = "c422112efcde56d68d1a8cd84234db51406ad78d";
+      sha256 = "1x759j9szqrqriay5xra7658n5qi8jsjlybn9z33d5ashydv4w20";
+    };
+  };
+
   my_vim = pkgs.vim_configurable.customize {
     name = "vim";
-    vimrcConfig.vam.knownPlugins = pkgs.vimPlugins;
+    vimrcConfig.vam.knownPlugins = pkgs.vimPlugins // {vim-minizinc=vim-minizinc;};
     vimrcConfig.vam.pluginDictionaries = [
       { names = [ "vim-tmux-navigator" "nerdtree" "julia-vim"
+                  "vim-minizinc"
       # "neco-ghc" 
       "vimproc" # "ghcmod"
                       ];} ];

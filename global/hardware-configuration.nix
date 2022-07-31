@@ -3,23 +3,81 @@
 # to /etc/nixos/configuration.nix instead.
 { config, lib, pkgs, ... }:
 
-{
+let
+  smb_idea_opts = "x-systemd.automount,noauto,x-systemd.idle-timeout=60,x-systemd.device-timeout=5s,x-systemd.mount-timeout=5s,credentials=/etc/nixos/smb-secrets";
+
+in {
   imports =
     [ <nixpkgs/nixos/modules/installer/scan/not-detected.nix>
     ];
 
-  hardware.bluetooth = {
+# Disable sound. Yes, disable it, pipewire seems to do it's own thing here.
+  sound.enable = false;
+  hardware.pulseaudio.enable = false;
+
+# pipewire
+  security.rtkit.enable = true;
+  services.pipewire = {
     enable = true;
+    alsa.enable = true;
+    alsa.support32Bit = true;
+    pulse.enable = true;
+    media-session.config.bluez-monitor.rules = [
+      {
+        # Matches all cards
+        matches = [ { "device.name" = "~bluez_card.*"; } ];
+        actions = {
+          "update-props" = {
+            "bluez5.reconnect-profiles" = [ "hfp_hf" "hsp_hs" ]; #"a2dp_sink" ];
+            # mSBC is not expected to work on all headset + adapter combinations.
+            "bluez5.msbc-support" = true;
+            # SBC-XQ is not expected to work on all headset + adapter combinations.
+            "bluez5.sbc-xq-support" = true;
+            "api.alsa.use-acp" = false;
+          };
+        };
+      }
+      {
+        matches = [
+          # Matches all sources
+          { "node.name" = "~bluez_input.*"; }
+          # Matches all outputs
+          { "node.name" = "~bluez_output.*"; }
+        ];
+        actions = {
+          "node.pause-on-idle" = false;
+        };
+      }
+    ];
+
+    # If you want to use JACK applications, uncomment this
+    #jack.enable = true;
+
+    # use the example session manager (no others are packaged yet so this is enabled by default,
+    # no need to redefine it in your config for now)
+    #media-session.enable = true;
+  };
+
+  services.blueman.enable = true;
+
+  hardware = {
+    bluetooth = {
+      enable = true;
+      settings.General = {
+        Enable = "Source,Sink,Media,Socket";
+      };
+    };
   };
   hardware.nvidia.prime = {
-    # offload.enable = false;
-    sync.enable = true;
+    offload.enable = true;
+    # sync.enable = true;
     intelBusId = "PCI:0:2:0";
     nvidiaBusId = "PCI:1:0:0";
   };
-  hardware.nvidia.powerManagement.enable = true;
+  hardware.nvidia.powerManagement.enable = false;
   boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usb_storage" "sd_mod" "rtsx_pci_sdmmc" ];
-  # boot.kernelModules = [ "coretemp" ];
+  boot.kernelModules = [ "coretemp" ];
+  boot.kernelParams = [ "quiet" "splash" "acpi_rev_override=5" ];
   # powerManagement.powertop.enable = true;
   services.thermald.enable = true;
   # environment.etc."sysconfig/lm_sensors".text = ''
@@ -34,7 +92,7 @@
   #   '';
   boot.extraModulePackages = [ ];
   # hardware.cpu.intel.updateMicrocode = true;
-  # hardware.enableAllFirmware = true;
+  hardware.enableAllFirmware = true;
   services.tlp = {
     enable = true;
     settings = {
@@ -61,11 +119,42 @@
     { device = "tmpfs";
       fsType = "tmpfs";
     };
+  fileSystems."/mnt/ideawin" = {
+      device = "//10.0.0.3/oldwin";
+      fsType = "cifs";
+      options = [smb_idea_opts];
+  };
+  fileSystems."/mnt/ideahdd" = {
+      device = "//10.0.0.3/hdd";
+      fsType = "cifs";
+      options = [smb_idea_opts];
+  };
+  fileSystems."/mnt/ideahome" = {
+      device = "//10.0.0.3/home";
+      fsType = "cifs";
+      options = [smb_idea_opts];
+  };
 
   swapDevices =
     [ { device = "/dev/mapper/cryptswap"; }
     ];
 
   nix.maxJobs = lib.mkDefault 8;
-  # services.tlp.enable = true;
+
+  services.udev.extraRules = ''
+    # HW.1 / Nano
+    SUBSYSTEMS=="usb", ATTRS{idVendor}=="2581", ATTRS{idProduct}=="1b7c|2b7c|3b7c|4b7c", TAG+="uaccess", TAG+="udev-acl"
+    # Blue
+    SUBSYSTEMS=="usb", ATTRS{idVendor}=="2c97", ATTRS{idProduct}=="0000|0000|0001|0002|0003|0004|0005|0006|0007|0008|0009|000a|000b|000c|000d|000e|000f|0010|0011|0012|0013|0014|0015|0016|0017|0018|0019|001a|001b|001c|001d|001e|001f", TAG+="uaccess", TAG+="udev-acl"
+    # Nano S
+    SUBSYSTEMS=="usb", ATTRS{idVendor}=="2c97", ATTRS{idProduct}=="0001|1000|1001|1002|1003|1004|1005|1006|1007|1008|1009|100a|100b|100c|100d|100e|100f|1010|1011|1012|1013|1014|1015|1016|1017|1018|1019|101a|101b|101c|101d|101e|101f", TAG+="uaccess", TAG+="udev-acl"
+    # Aramis
+    SUBSYSTEMS=="usb", ATTRS{idVendor}=="2c97", ATTRS{idProduct}=="0002|2000|2001|2002|2003|2004|2005|2006|2007|2008|2009|200a|200b|200c|200d|200e|200f|2010|2011|2012|2013|2014|2015|2016|2017|2018|2019|201a|201b|201c|201d|201e|201f", TAG+="uaccess", TAG+="udev-acl"
+    # HW2
+    SUBSYSTEMS=="usb", ATTRS{idVendor}=="2c97", ATTRS{idProduct}=="0003|3000|3001|3002|3003|3004|3005|3006|3007|3008|3009|300a|300b|300c|300d|300e|300f|3010|3011|3012|3013|3014|3015|3016|3017|3018|3019|301a|301b|301c|301d|301e|301f", TAG+="uaccess", TAG+="udev-acl"
+    # Nano X
+    SUBSYSTEMS=="usb", ATTRS{idVendor}=="2c97", ATTRS{idProduct}=="0004|4000|4001|4002|4003|4004|4005|4006|4007|4008|4009|400a|400b|400c|400d|400e|400f|4010|4011|4012|4013|4014|4015|4016|4017|4018|4019|401a|401b|401c|401d|401e|401f", TAG+="uaccess", TAG+="udev-acl"
+    # Ledger Test
+    SUBSYSTEMS=="usb", ATTRS{idVendor}=="2c97", ATTRS{idProduct}=="0005|5000|5001|5002|5003|5004|5005|5006|5007|5008|5009|500a|500b|500c|500d|500e|500f|5010|5011|5012|5013|5014|5015|5016|5017|5018|5019|501a|501b|501c|501d|501e|501f", TAG+="uaccess", TAG+="udev-acl"
+  '';
 }
